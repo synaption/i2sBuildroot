@@ -4,7 +4,7 @@
 DOCKER_IMAGE="custom-ubuntu:22.04"
 
 # Define the working directory inside the container
-WORKDIR="/home/bob/i2sBuildroot"
+WORKDIR=$(pwd)
 
 # Get the UID and GID of the host user
 # Check if the custom Docker image exists, if not, build it
