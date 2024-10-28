@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_I2S_MIC_PATH/package/snd_i2s_rpi/Config.in"

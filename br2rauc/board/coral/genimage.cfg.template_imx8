@@ -1,0 +1,68 @@
+# Minimal SD card image for the Freescale iMX8 boards
+#
+# We mimic the .sdcard Freescale's image format:
+# * the SD card must have 33 kB free space at the beginning,
+# * U-Boot is integrated into imx8-boot-sd.bin and is dumped as is,
+# * a FAT partition at offset 8MB is containing Image and DTB files
+# * a single root filesystem partition is required (ext2, ext3 or ext4)
+#
+image data.ext4 {
+  name = "Data"
+  mountpoint = /data
+  ext4 {
+    use-mke2fs = true
+    label = "Data"
+    features = "^64bit"
+  }
+  size = 4500M
+}
+
+
+image sdcard.img {
+  hdimage {
+  }
+
+  partition ubootenv0 {
+    in-partition-table = false
+    image = "uboot-env.bin"
+    offset = 1M
+  }
+
+  partition ubootenv1 {
+    in-partition-table = false
+    image = "uboot-env.bin"
+    offset = 2M
+  }
+
+  partition boot0 {
+    partition-type = 0xC
+    bootable = "true"
+    image = "boot.vfat"
+    offset = 8M
+  }
+
+  partition boot1 {
+    image = "boot.vfat"
+    in-partition-table = false
+    offset = 136M
+  }
+
+  partition rootfs0 {
+    partition-type = 0x83
+    image = "rootfs.ext4"
+    size = 1000M
+  }
+
+  partition rootfs1 {
+    partition-type = 0x83
+    image = "rootfs.ext4"
+    size = 1000M
+  }
+
+  partition data {
+    partition-type = 0x83
+    image = "data.ext4"
+    size = 4500M
+  }
+
+}

@@ -1,0 +1,34 @@
+--- a/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts	2022-10-18 15:34:31.774156655 -0500
++++ b/arch/arm64/boot/dts/freescale/imx8mq-phanbell.dts	2022-10-18 15:40:42.014981359 -0500
+@@ -348,6 +348,17 @@
+ 
+ 
+ &iomuxc {
++
++	pinctrl_sai1: sai1grp {
++		fsl,pins = <
++				MX8MQ_IOMUXC_SAI1_TXFS_SAI1_TX_SYNC     0xd6
++				MX8MQ_IOMUXC_SAI1_TXC_SAI1_TX_BCLK      0xd6
++				MX8MQ_IOMUXC_SAI1_MCLK_SAI1_MCLK        0xd6
++				MX8MQ_IOMUXC_SAI1_TXD0_SAI1_TX_DATA0    0xd6
++				MX8MQ_IOMUXC_SAI1_RXD0_SAI1_RX_DATA0    0xd6
++			>;
++	};
++
+     pinctrl_pps: ppsgrp {
+         fsl,pins = <MX8MQ_IOMUXC_ECSPI2_MISO_GPIO5_IO12	 0x19>;
+     };
+@@ -562,3 +571,12 @@
+ 	pinctrl-0 = <&pinctrl_pwm3>;
+ 	status = "okay";
+ };
++
++&sai1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_sai1>;
++	#assigned-clocks = <&clk IMX8MQ_CLK_SAI1>;
++	#assigned-clock-parents = <&clk IMX8MQ_AUDIO_PLL1_OUT>;
++	#assigned-clock-rates = <24576000>;
++	status = "okay";
++};
+\ No newline at end of file

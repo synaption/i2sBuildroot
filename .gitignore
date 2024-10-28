@@ -1,0 +1,17 @@
+cache/*
+ccache/*
+i2s_mic/package/snd_i2s_rpiOLD/src/linux-custom/*
+i2s_mic/package/snd_i2s_rpi/src/linux-custom/*
+output_coral/*
+output/*
+twistd.pid
+asdf
+patch
+OLD/*
+linux-lf-6.1.36-2.1.0/
+*.pem
+*.code-workspace
+start_update_server.sh
+
+!output_coral/local.mk
+!output_coral/.config

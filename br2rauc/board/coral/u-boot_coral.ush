@@ -1,0 +1,50 @@
+printenv
+echo asdfasdf
+fdt_addr=0x43000000
+run loadimage #loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}
+#run mmcargs #setenv bootargs console=${console} root=${mmcroot}
+run loadfdt #fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}
+#setenv bootargs "console=${console} root=/dev/mmcblk0p2 rootwait rw rauc.slot=A"
+
+
+test -n "${BOOT_ORDER}" || setenv BOOT_ORDER "A B"
+test -n "${BOOT_A_LEFT}" || setenv BOOT_A_LEFT 3
+test -n "${BOOT_B_LEFT}" || setenv BOOT_B_LEFT 3
+
+setenv bootargs
+for BOOT_SLOT in "${BOOT_ORDER}"; do
+  if test "x${bootargs}" != "x"; then
+    # skip remaining slots
+  elif test "x${BOOT_SLOT}" = "xA"; then
+    if test ${BOOT_A_LEFT} -gt 0; then
+      echo "Found valid slot A, ${BOOT_A_LEFT} attempts remaining"
+      setexpr BOOT_A_LEFT ${BOOT_A_LEFT} - 1
+      #setenv load_kernel "nand read ${kernel_loadaddr} ${kernel_a_nandoffset} ${kernel_size}"
+      setenv bootargs "${bootargs_default} console=${console} root=/dev/mmcblk0p2 rootwait rw rauc.slot=A cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory cgroup_hierarchy=1"
+    fi
+  elif test "x${BOOT_SLOT}" = "xB"; then
+    if test ${BOOT_B_LEFT} -gt 0; then
+      echo "Found valid slot B, ${BOOT_B_LEFT} attempts remaining"
+      setexpr BOOT_B_LEFT ${BOOT_B_LEFT} - 1
+      #setenv load_kernel "nand read ${kernel_loadaddr} ${kernel_b_nandoffset} ${kernel_size}"
+      setenv bootargs "${bootargs_default} console=${console} root=/dev/mmcblk0p3 rootwait rw rauc.slot=B cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory cgroup_hierarchy=1"
+    fi
+  fi
+done
+
+setenv x 500
+
+if test -n "${bootargs}"; then
+  saveenv
+else
+  echo "No valid slot found, resetting tries to 3"
+  setenv BOOT_A_LEFT 3
+  setenv BOOT_B_LEFT 3
+  saveenv
+  reset
+fi
+
+echo " Starting kernel"
+printenv
+echo y
+booti ${loadaddr} - ${fdt_addr}

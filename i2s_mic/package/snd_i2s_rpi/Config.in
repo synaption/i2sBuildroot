@@ -1,0 +1,4 @@
+config BR2_PACKAGE_SND_I2S_RPI
+	bool "snd_i2s_rpi"
+	help
+	  Install snd_i2s_rpi i2s mic driver.

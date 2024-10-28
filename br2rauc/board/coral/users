@@ -1,0 +1,2 @@
+pi 1000 pi 1000 - /home/pi /bin/sh adm,audio,cdrom,dialout,floppy,plugdev,staff,sudo,video,docker,gpsd,transmission Default pi
+

@@ -1,0 +1,1 @@
+root=/dev/mmcblk0p2 rootwait console=tty1 console=ttyAMA0,115200 fw_dtb cgroup_memory=1 cgroup_enable=memory
