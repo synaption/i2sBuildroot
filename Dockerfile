@@ -19,6 +19,7 @@ RUN apt-get update && \
     apt-get install -y util-linux && \
     apt-get install -y python3 && \
     apt-get install -y python3-pip && \
+    apt-get install -y patchelf && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
