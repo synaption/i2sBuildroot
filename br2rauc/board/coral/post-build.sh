@@ -39,8 +39,7 @@ else
 	exit 1
 fi
 
-# Add disable-spidev.dtbo
-install -D -m 0644 $BR2_EXTERNAL_BR2RAUC_PATH/board/raspberrypi/disable-spidev.dtbo ${BASE_DIR}/images/rpi-firmware/overlays/disable-spidev.dtbo
+
 
 #  Copy newah firmware
 #cp ${TARGET_DIR}/lib/firmware/nrc7292_cspi.bin ${TARGET_DIR}/lib/firmware/uni_s1g.bin

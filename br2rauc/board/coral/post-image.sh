@@ -88,9 +88,9 @@ main()
 	local FILES="$(dtb_list) $(linux_image)"
 	local IMXOFFSET="$(imx_offset)"
 	local UBOOTBIN="$(uboot_image)"
-	local GENIMAGE_CFG=$(BR2_EXTERNAL_BR2RAUC_PATH)/coral/genimage.cfg.template_imx8 #"$(mktemp --suffix genimage.cfg)"
+	local GENIMAGE_CFG=${BR2_EXTERNAL_BR2RAUC_PATH}/board/coral/genimage.cfg.template_imx8 #"$(mktemp --suffix genimage.cfg)"
 	local GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	GENBOOTFS_CFG=$(BR2_EXTERNAL_BR2RAUC_PATH)/board/coral/genbootfs-coral.cfg
+	GENBOOTFS_CFG=${BR2_EXTERNAL_BR2RAUC_PATH}/board/coral/genbootfs-coral.cfg
 	RAUC_COMPATIBLE="br2rauc-rpi4-64"
 	 
     trap 'rm -rf "${ROOTPATH_TMP}"' EXIT
