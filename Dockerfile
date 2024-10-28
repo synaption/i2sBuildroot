@@ -24,5 +24,5 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
-WORKDIR /home/bob/gsdBuildroot
+WORKDIR /home/bob/i2sBuildroot
 

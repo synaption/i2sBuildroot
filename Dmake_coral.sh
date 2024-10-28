@@ -4,7 +4,7 @@
 DOCKER_IMAGE="custom-ubuntu:22.04"
 
 # Define the working directory inside the container
-WORKDIR=$(pwd)
+WORKINGDIR=$(pwd)
 
 # Get the UID and GID of the host user
 # Check if the custom Docker image exists, if not, build it
@@ -16,4 +16,4 @@ fi
 
 
 # Run the Docker container and execute the build commands as non-root user
-docker run --rm  -v $WORKDIR:/home/bob/i2sBuildroot -u $(id -u):$(id -g) --privileged --network host -w $WORKDIR $DOCKER_IMAGE /bin/bash -c "sh make_coral.sh $1"
+docker run --rm  -v $WORKINGDIR:/home/bob/i2sBuildroot -u $(id -u):$(id -g) --privileged --network host -w "/home/bob/i2sBuildroot" $DOCKER_IMAGE /bin/bash -c "sh make_coral.sh $1"

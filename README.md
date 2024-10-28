@@ -1,4 +1,8 @@
 # i2sBuildroot
+
+builds a minimumal booting linux with ota enabled and builds a driver for the microphone.  There is a small python program that crashes everything randomly after an hour or 2 on average.  
+
+
 # Build Instructions
 
 1. Clone this repo with subrepos:
