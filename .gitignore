@@ -14,4 +14,3 @@ linux-lf-6.1.36-2.1.0/
 start_update_server.sh
 
 !output_coral/local.mk
-!output_coral/.config
