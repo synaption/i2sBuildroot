@@ -14,3 +14,6 @@ linux-lf-6.1.36-2.1.0/
 start_update_server.sh
 
 !output_coral/local.mk
+i2s_mic/rootfs-overlay/home/pi/rauc/*
+dts/*
+output_coral/.config

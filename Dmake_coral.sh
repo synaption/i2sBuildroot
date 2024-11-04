@@ -16,4 +16,5 @@ fi
 
 
 # Run the Docker container and execute the build commands as non-root user
-docker run --rm  -v $WORKINGDIR:/home/bob/i2sBuildroot -u $(id -u):$(id -g) --privileged --network host -w "/home/bob/i2sBuildroot" $DOCKER_IMAGE /bin/bash -c "sh make_coral.sh $1"
+docker run --rm  -v $WORKINGDIR:/home/builduser/i2sBuildroot -u $(id -u):$(id -g) --privileged --network host -w "/home/builduser/i2sBuildroot" $DOCKER_IMAGE /bin/bash -c "sh make_coral.sh $1"
+#  docker run --rm -it -v $WORKINGDIR:/home/builduser/i2sBuildroot -u $(id -u):$(id -g) --privileged --network host -w "/home/builduser/i2sBuildroot" $DOCKER_IMAGE /bin/bash 
