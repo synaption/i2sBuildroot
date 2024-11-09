@@ -33,3 +33,10 @@ i2sBuildroot/i2s_mic/rootfs-overlay/home/pi/min_record.py
     ```bash
     ./Dmake_coral.sh
     ```
+
+To reset clear your docker containers and remove the buildroot config file:
+    ```bash
+    rm output_coral/.config 
+    docker ps -aq | xargs docker stop | xargs docker rm
+    docker image ls -aq | xargs docker image rm
+    ```
