@@ -21,6 +21,7 @@ RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
 RUN apt-get install -y patchelf
 RUN apt-get install -y bmap-tools
+RUN apt-get install -y libncurses5-dev
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
