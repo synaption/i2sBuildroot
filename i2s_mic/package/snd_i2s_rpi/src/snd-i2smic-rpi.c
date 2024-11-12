@@ -1,130 +1,88 @@
 /*
  * =====================================================================================
  *
- *       Filename:  snd-i2smic-rpi
+ *       Filename:  snd-i2smic-rpi.c
  *
- *    Description:  I2S microphone kernel module
+ *    Description:  I2S microphone kernel module for i.MX platforms
  *
  *        Version:  0.1.0
- *        Created:  2020-04-14
- *       Revision:  none
+ *        Created:  2023-10-30
  *       Compiler:  gcc
  *
- *       Pi4 Mods:  Carter Nelson
- *    Orig Author:  Huan Truong (htruong@tnhh.net), originally written by Paul Creaser
+ *       Author:    Your Name
  *
  * =====================================================================================
  */
+
 #include <linux/module.h>
-#include <linux/moduleparam.h>
-#include <linux/kernel.h>
-#include <linux/kmod.h>
 #include <linux/platform_device.h>
+#include <sound/soc.h>
 #include <sound/simple_card.h>
-#include <linux/delay.h>
-#include "snd-i2smic-rpi.h"
 
-/*
- * modified for linux 4.1.5
- * inspired by https://github.com/msperl/spi-config
- * with thanks for https://github.com/notro/rpi-source/wiki
- * as well as Florian Meier for the rpi i2s and dma drivers
- *
- * to use a differant (simple-card compatible) codec
- * change the codec name string in two places and the
- * codec_dai name string. (see codec's source file)
- *
- *
- * N.B. playback vs capture is determined by the codec choice
- * */
+#define DRIVER_NAME "snd-i2smic-rpi"
+#define CARD_NAME   "snd_rpi_i2s_card"
+#define DAI_NAME    "simple-card_codec_link"
+#define CODEC_NAME  "snd-soc-dummy"
+#define CODEC_DAI   "snd-soc-dummy-dai"
+#define PLATFORM_NAME "30010000.sai"  // Adjust based on your hardware
 
-static struct asoc_simple_card_info card_info;
-static struct platform_device card_device;
+/* Dummy release callback */
+static void device_release_callback(struct device *dev) { }
 
-
-/*
- * Dummy callback for release
- */
-void device_release_callback(struct device *dev) { /*  do nothing */ };
-
-/*
- * Setup the card info
- */
-static struct asoc_simple_card_info default_card_info = {
-  .card = "snd_rpi_i2s_card",       // -> snd_soc_card.name
-  .name = "simple-card_codec_link", // -> snd_soc_dai_link.name
-  .codec = "snd-soc-dummy",         // "dmic-codec", // -> snd_soc_dai_link.codec_name
-  .platform = "not-set.sai",
-  .daifmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS,
-  .cpu_dai = {
-    .name = "not-set.sai",          // -> snd_soc_dai_link.cpu_dai_name
-    .sysclk = 0
-  },
-  .codec_dai = {
-    .name = "snd-soc-dummy-dai",    //"dmic-codec", // -> snd_soc_dai_link.codec_dai_name
-    .sysclk = 0
-  },
+static struct asoc_simple_card_info card_info = {
+    .card = CARD_NAME,           // snd_soc_card.name
+    .name = DAI_NAME,            // snd_soc_dai_link.name
+    .codec = CODEC_NAME,         // snd_soc_dai_link.codec_name
+    .platform = PLATFORM_NAME,   // snd_soc_dai_link.platform_name
+    .daifmt = SND_SOC_DAIFMT_I2S |
+              SND_SOC_DAIFMT_NB_NF |
+              SND_SOC_DAIFMT_CBS_CFS,
+    .cpu_dai = {
+        .name = PLATFORM_NAME,   // snd_soc_dai_link.cpu_dai_name
+        .sysclk = 0,
+    },
+    .codec_dai = {
+        .name = CODEC_DAI,       // snd_soc_dai_link.codec_dai_name
+        .sysclk = 0,
+    },
 };
 
-/*
- * Setup the card device
- */
-static struct platform_device default_card_device = {
-  .name = "asoc-simple-card",   //module alias
-  .id = 1,
-  .num_resources = 0,
-  .dev = {
-    .release = &device_release_callback,
-    .platform_data = &default_card_info, // *HACK ALERT*
-  },
+static struct platform_device card_device = {
+    .name = "asoc-simple-card",
+    .id = -1,
+    .dev = {
+        .platform_data = &card_info,
+        .release = device_release_callback,
+    },
 };
 
-/*
- * Callback for module initialization
- */
-int i2s_mic_rpi_init(void)
+static int __init i2s_mic_rpi_init(void)
 {
-  const char *dmaengine = "imx-sdma"; //module name
-  static char *card_platform;
-  int ret;
+    int ret;
 
-  printk(KERN_INFO "snd-i2smic-rpi: Version %s\n", SND_I2SMIC_RPI_VERSION);
+    pr_info("%s: Initializing I2S microphone driver\n", DRIVER_NAME);
 
-  card_platform = "30010000.sai";
+    /* Register the platform device */
+    ret = platform_device_register(&card_device);
+    if (ret) {
+        pr_err("%s: Failed to register platform device: %d\n", DRIVER_NAME, ret);
+        return ret;
+    }
 
-  printk(KERN_INFO "snd-i2smic-rpi: Setting platform to %s\n", card_platform);
+    pr_info("%s: Platform device registered successfully\n", DRIVER_NAME);
 
-  // request DMA engine module
-  ret = request_module(dmaengine);
-  pr_alert("request module load '%s': %d\n",dmaengine, ret);
-
-  // update info
-  card_info = default_card_info;
-  card_info.platform = card_platform;
-  card_info.cpu_dai.name = card_platform;
-
-  card_device = default_card_device;
-  card_device.dev.platform_data = &card_info;
-
-  // register the card device
-  ret = platform_device_register(&card_device);
-  pr_alert("register platform device '%s': %d\n",card_device.name, ret);
-
-  return 0;
+    return 0;
 }
 
-/*
- * Callback for module exit
- */
-void i2s_mic_rpi_exit(void)
+static void __exit i2s_mic_rpi_exit(void)
 {
-  platform_device_unregister(&card_device);
-  pr_alert("i2s mic module unloaded\n");
+    platform_device_unregister(&card_device);
+    pr_info("%s: I2S microphone driver exited\n", DRIVER_NAME);
 }
 
-// Plumb it up
 module_init(i2s_mic_rpi_init);
 module_exit(i2s_mic_rpi_exit);
-MODULE_DESCRIPTION("ASoC simple-card I2S Microphone");
-MODULE_AUTHOR("Carter Nelson");
+
+MODULE_AUTHOR("Your Name");
+MODULE_DESCRIPTION("ASoC simple-card I2S Microphone Driver for i.MX Platforms");
 MODULE_LICENSE("GPL v2");
